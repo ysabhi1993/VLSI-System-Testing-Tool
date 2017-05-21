@@ -246,22 +246,29 @@ int gateType(string a){
 
 // This function traverses the circuit using Recursion to get o/p of each gate:
 
-void set_OutputGateValue(vector<Gate*> input_gates){
-    vector<char> *gateValues = new vector<char>;
-      for (int i = 0; i < input_gates.size(); i++){	
-	vector<Gate*> inputGates = input_gates[i]->get_gateInputs();
-	string input_gateName = input_gates[i]->gateTypeName();
-	if (inputGates.size() == 0){
-	        gateValues->push_back(input_gates[i]->getValue());
+char set_OutputGateValue(Gate * input_gate){
+	vector<Gate *> InputGates = input_gate->get_gateInputs();
+	vector<char> *gateValues = new vector<char>;
+	string input_gateName = input_gate->gateTypeName();
+	char newVal;	
+	if(InputGates.size() == 0){
+	    return input_gate->getValue();
 	}
 	else{	
-		set_OutputGateValue(inputGates);
-		input_gates[i]->setValue(get_Output(gateType(input_gateName), gateValues));
-      	}
-	
-      }
-	return;
+	    for(int i = 0; i < InputGates.size(); i++){
+		if(hashValues.find(InputGates[i]->get_outputName()) != hashValues.end()){
+			newVal = InputGates[i]->getValue();
+		}
+		else{	
+			newVal = set_OutputGateValue(InputGates[i]);
+			hashValues[InputGates[i]->get_outputName()] = true;
+		}
 
+		gateValues->push_back(newVal); 		
+	    }
+	    input_gate->setValue(get_Output(gateType(input_gateName), gateValues));
+	    return input_gate->getValue();
+	}
 }
 
 		  
